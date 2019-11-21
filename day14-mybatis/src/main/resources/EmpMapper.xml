@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace一般指定为当前文件的所在包路径+文件名（将来是接口名） 在程序中通过[ namespace + id ]定位到执行哪一条SQL语句 -->
+<mapper namespace="EmpMapper">
+	<!-- 练习1:查询所有的员工信息 resultType:指定返回结果的类型 也就是对查询结果的封装是什么类型就指定什么类型 如果返回值是一个集合,这里只需要指定集合中的泛型 
+		id得失独一无二的 -->
+	<select id="findAll" resultType="com.tedu.pojo.Emp">
+		select * from emp
+	</select>
+
+	<!-- 练习2: 新增员工信息: 刘德华 歌手 888 */ -->
+	<update id="insert">
+		insert into emp values(null,'刘德华','歌手',888)
+	</update>
+
+	<!-- 练习3,将刘德华的职业改为 歌手and演员 ,salary改为88888 -->
+	<update id="update">
+		update emp set job='歌手and演员',salary=88888
+		where
+		name='刘德华'
+	</update>
+
+	<!-- 练习4: 删除name为'刘德华'的记录 -->
+	<update id="delete">
+		delete from emp where name='刘德华'
+	</update>
+
+	<!-- 练习5:查询emp表中指定id的员工信息 #{}占位符的使用 -->
+	<select id="findById" resultType="com.tedu.pojo.Emp">
+		select * from emp where
+		id=#{id}
+	</select>
+
+	<!-- 练习6:新增员工信息 :张飞 java开发工程师 15000 -->
+	<update id="insert2">
+		insert into emp values(null,#{name},#{job},#{salary})
+	</update>
+
+	<!-- 练习7,通过id修改对应员工的信息 -->
+	<update id="updateById">
+		update emp set name='关羽' where id=#{id}
+	</update>
+
+	<!-- 练习8 通过id删除员工信息 -->
+	<update id="deleteById">
+		delete from emp where id=#{id}
+	</update>
+
+	<!-- 练习9 :修改员工信息:张飞 架构师 25000 -->
+	<update id="update2">
+		update emp set job=#{job},salary=#{salary}
+		where
+		name=#{name}
+	</update>
+
+	<!-- 练习10 动态指定查询的列 -->
+	<select id="findAll2" resultType="com.tedu.pojo.Emp">
+		select ${cols} from emp
+	</select>
+
+	<!-- 练习11-2根据name 模糊查询emp表 使用#{}占位符 -->
+	<select id="findAll3" resultType="com.tedu.pojo.Emp">
+		select * from emp where name
+		like '%${name}%'
+	</select>
+
+	<!-- 练习11-2根据name 模糊查询emp表 使用#{}占位符 -->
+	<select id="findAll4" resultType="com.tedu.pojo.Emp">
+		select * from emp where name
+		like #{name}
+	</select>
+
+	<!-- 12,根据薪资查询员工信息 -->
+
+	<select id="findAll5" resultType="com.tedu.pojo.Emp">
+		select * from emp
+		<!-- where 1=1 <if test="minSal!=null"> and salary >= #{minSal} </if> <if 
+			test="maxSal!=null"> and #{maxSal} >= salary </if> -->
+		<where>
+			<if test="minSal!=null">
+				and salary >= #{minSal}
+			</if>
+			<if test="maxSal!=null">
+				and #{maxSal} >= salary
+			</if>
+		</where>
+	</select>
+
+
+	<!-- 练习13:根据参数传递与否,修改表中的列 -->
+	<update id="update3">
+		update emp
+		<set>
+			<if test="name !=null">
+				name=#{name}
+			</if>
+			<if test="job!=null">
+				job=#{job}
+			</if>
+			<if test="salary!=null">
+				salary=#{salary}
+			</if>
+		</set>
+		where id=#{id}
+	</update>
+
+	<!-- 练习14:根据id批量删除员工信息 Integer ids=[1,3,5,7] -->
+	<update id="deleteByIds">
+		delete from emp where id in
+		<foreach collection="array" open="(" close=")" item="id"
+			separator=",">
+			#{id}
+		</foreach>
+	</update>
+
+	<!-- 练习15,批量更新员工的薪资 Integer[] ids = {2,4,6,8} -->
+	<update id="updateByIds">
+		update emp set salary=salary+2000 where id in
+		<foreach collection="array" open="(" close=")" item="id"
+			separator=",">
+			#{id}
+		</foreach>
+	</update>
+
+
+
+</mapper>
